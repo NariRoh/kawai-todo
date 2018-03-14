@@ -1,16 +1,25 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Dimensions,
+  TextInput
+} from 'react-native';
 
 const { width, height } = Dimensions.get("window");
 
 export default class ToDo extends Component {
   state = {
     isEditing: false,
-    isCompleted: false
+    isCompleted: false,
+    toDoValue: ""
   };
 
   render() {
-    const { isEditing, isCompleted } = this.state;
+    const { isEditing, isCompleted, toDoValue } = this.state;
+    const { text } = this.props;
 
     return (
       <View style={styles.container}>
@@ -23,14 +32,26 @@ export default class ToDo extends Component {
               ]}
             />
           </TouchableOpacity>
-          <Text
-            style={[
-              styles.text,
-              isCompleted ? styles.completedText : styles.unCompletedText
-            ]}
-          >
-            Hello
-          </Text>
+          {isEditing ? (
+            <TextInput
+              style={[
+                styles.input,
+                styles.text,
+                isCompleted ? styles.completedText : styles.unCompletedText
+              ]}
+              value={toDoValue}
+              multiline={true}
+              onChangeText={this._controlInput}
+            />
+          ) : (
+            <Text
+              style={[
+                styles.text,
+                isCompleted ? styles.completedText : styles.unCompletedText
+              ]}
+            >
+              {text}
+            </Text>)}
         </View>
         { isEditing ? (
           <View style={styles.actions}>
@@ -66,10 +87,12 @@ export default class ToDo extends Component {
     });
   };
 
-// the reason not toggle this state is we need to save todos in App.js if we do, it'll be complicated 
+// the reason not toggle this state is we need to save todos in App.js if we do, it'll be complicated
   _startEditing = () => {
+    const { text } = this.props;
     this.setState({
-      isEditing: true
+      isEditing: true,
+      toDoValue: text
     });
   };
 
@@ -77,7 +100,13 @@ export default class ToDo extends Component {
     this.setState({
       isEditing: false
     })
-  }
+  };
+
+  _controlInput = (text) => {
+    this.setState({
+      toDoValue: text
+    });
+  };
 }
 
 const styles = StyleSheet.create({
@@ -127,5 +156,9 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     marginHorizontal: 10
     // so those icons can be pressed around fat figers!!
+  },
+  input: {
+    marginVertical: 15,
+    width: width / 2
   }
 });
