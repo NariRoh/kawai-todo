@@ -42,6 +42,9 @@ export default class ToDo extends Component {
               value={toDoValue}
               multiline={true}
               onChangeText={this._controlInput}
+              returnKeyType={"done"}
+              onBlur={this._finishEditing}
+              // when cliking outside of textInput area, editing is done
             />
           ) : (
             <Text
