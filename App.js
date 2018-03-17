@@ -18,17 +18,18 @@ const { width, height } = Dimensions.get("window");
 export default class App extends React.Component {
   state = {
     newToDo: "",
-    loadedTodos: false
-  }
+    loadedToDos: false,
+    toDos: {}
+  };
 
   componentDidMount() {
-    this._loadTodos();
-  }
+    this._loadToDos();
+  };
 
   render() {
-    const { newToDo, loadedTodos } = this.state;
-
-    if( !loadedTodos ) {
+    const { newToDo, loadedToDos, toDos } = this.state;
+    console.log(toDos);
+    if( !loadedToDos ) {
       return <AppLoading />;
     }
 
@@ -48,7 +49,11 @@ export default class App extends React.Component {
             onSubmitEditing={this._addToDo}
            />
            <ScrollView contentContainerStyle={styles.toDos}>
-            <ToDo text={"Hi I'm new To Do"}/>
+             {Object.values(toDos).map(toDo => <ToDo key={toDo.id} {...toDo} deleteToDo={this._deleteToDo} />)}
+            {/*
+              if it was an array...
+              {toDos.map(todo => <ToDo />)}
+            */}
            </ScrollView>
         </View>
       </View>
@@ -61,33 +66,36 @@ export default class App extends React.Component {
     });
   };
 
-  _loadTodos = () => {
+  _loadToDos = () => {
     this.setState({
-      loadedTodos: true
+      loadedToDos: true
     });
   };
 
   _addToDo = () => {
     const { newToDo } = this.state;
     if (newToDo !== "") {
-      this.setState({
-        newToDo: ""
-      });
       // 👇 toDos: prevState.toDos + newToDo
       this.setState(prevState => {
         const ID = uuidv1();
+        /*
+          think the state as your database.
+          if it's for showing the data array is not bad but
+          when there are many actions like editing and deleting the object(or data),
+          it's less complicated and faster to use {} than []
+         */
         const newToDoObject = {
           [ID]: {
             id: ID,
             isCompleted: false,
             text: newToDo,
-            createAt: Date.now()
+            createdAt: Date.now()
           }
         };
         const newState = {
           ...prevState,
           newToDo: "",
-          todos: {
+          toDos: {
             ...prevState.toDos,
             ...newToDoObject
           }
@@ -95,6 +103,17 @@ export default class App extends React.Component {
         return { ...newState };
       });
     }
+  };
+  _deleteToDo = id => {
+    this.setState(prevState => {
+      const toDos = prevState.toDos;
+      delete toDos[id];
+      const newState = {
+        ...prevState,
+        ...toDos
+      };
+      return { ...newState };
+    });
   };
 }
 
