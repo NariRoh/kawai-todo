@@ -26,12 +26,20 @@ export default class ToDo extends Component {
     text: PropTypes.string.isRequired,
     isCompleted: PropTypes.bool.isRequired,
     deleteToDo: PropTypes.func.isRequired,
-    id: PropTypes.string.isRequired
+    id: PropTypes.string.isRequired,
+    unCompleteToDo: PropTypes.func.isRequired,
+    completeToDo: PropTypes.func.isRequired
+  };
+
+  state = {
+    isEditing: false,
+    // isCompleted: false,
+    toDoValue: ""
   };
 
   render() {
-    const { isEditing, isCompleted, toDoValue } = this.state;
-    const { text, deleteToDo, id } = this.props;
+    const { isEditing, toDoValue } = this.state;
+    const { text, deleteToDo, isCompleted, id } = this.props;
 
     return (
       <View style={styles.container}>
@@ -96,11 +104,12 @@ export default class ToDo extends Component {
   }
 
   _toggleComplete = () => {
-    this.setState(prevState => {
-      return {
-        isCompleted: !prevState.isCompleted
-      };
-    });
+    const { isCompleted, id, completeToDo, unCompleteToDo } = this.props;
+    if (isCompleted) {
+      unCompleteToDo(id);
+    } else {
+      completeToDo(id);
+    }
   };
 
 // the reason not toggle this state is we need to save todos in App.js if we do, it'll be complicated
