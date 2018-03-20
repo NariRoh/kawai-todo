@@ -66,6 +66,7 @@ export default class ToDo extends Component {
               returnKeyType={"done"}
               onBlur={this._finishEditing}
               // when cliking outside of textInput area, editing is done
+              underlineColorAndroid={"transparent"}
             />
           ) : (
             <Text
